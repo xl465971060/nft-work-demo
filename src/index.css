@@ -11,6 +11,7 @@ body {
   /*font-family: 'M PLUS 1p', sans-serif;*/
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
   background-image: url('./bg.png');
   background-size: 200% 180%;
   animation-duration: 3s;
@@ -27,5 +28,24 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+/* 背景大图（200% x 180%）沿四个角循环平移扫屏，保证任何时刻铺满页面 */
+@keyframes gradientTransform {
+  0% {
+    background-position: 0% 0%;
+  }
+  25% {
+    background-position: 100% 0%;
+  }
+  50% {
+    background-position: 100% 100%;
+  }
+  75% {
+    background-position: 0% 100%;
+  }
+  100% {
+    background-position: 0% 0%;
+  }
 }
 
