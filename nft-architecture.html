@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NFT Marketplace 项目架构图</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'JetBrains Mono', 'Noto Sans SC', monospace;
+      background: #020617;
+      min-height: 100vh;
+      padding: 2rem;
+      color: white;
+    }
+    .container { max-width: 1200px; margin: 0 auto; }
+    .header { margin-bottom: 2rem; }
+    .header-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem; }
+    .pulse-dot { width: 12px; height: 12px; background: #22d3ee; border-radius: 50%; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+    h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.025em; }
+    .subtitle { color: #94a3b8; font-size: 0.875rem; margin-left: 1.75rem; }
+    .diagram-container {
+      background: rgba(15, 23, 42, 0.5);
+      border-radius: 1rem;
+      border: 1px solid #1e293b;
+      padding: 1.5rem;
+      overflow-x: auto;
+    }
+    svg { width: 100%; min-width: 900px; display: block; }
+    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin-top: 2rem; }
+    .card { background: rgba(15, 23, 42, 0.5); border-radius: 0.75rem; border: 1px solid #1e293b; padding: 1.25rem; }
+    .card-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; }
+    .card-dot { width: 8px; height: 8px; border-radius: 50%; }
+    .card-dot.cyan { background: #22d3ee; }
+    .card-dot.emerald { background: #34d399; }
+    .card-dot.violet { background: #a78bfa; }
+    .card-dot.amber { background: #fbbf24; }
+    .card-dot.rose { background: #fb7185; }
+    .card h3 { font-size: 0.875rem; font-weight: 600; }
+    .card ul { list-style: none; color: #94a3b8; font-size: 0.75rem; }
+    .card li { margin-bottom: 0.375rem; }
+    .footer { text-align: center; margin-top: 1.5rem; color: #475569; font-size: 0.75rem; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="header-row">
+        <div class="pulse-dot"></div>
+        <h1>NFT Marketplace 项目架构</h1>
+      </div>
+      <p class="subtitle">React 18 前端 · Solidity 0.8.26 合约（ERC-721）· Pinata IPFS 存储 · Firebase 托管 · 本地 Hardhat 链（chainId 31337）</p>
+    </div>
+
+    <div class="diagram-container">
+      <svg viewBox="0 0 1000 680">
+        <defs>
+          <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#64748b" />
+          </marker>
+          <marker id="arrowheadCyan" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#22d3ee" />
+          </marker>
+          <marker id="arrowheadEm" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#34d399" />
+          </marker>
+          <marker id="arrowheadRose" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#fb7185" />
+          </marker>
+          <marker id="arrowheadAmber" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#fbbf24" />
+          </marker>
+          <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.5"/>
+          </pattern>
+        </defs>
+
+        <!-- 背景网格 -->
+        <rect width="100%" height="100%" fill="url(#grid)" />
+
+        <!-- ==================== 连线（先画，置于组件之下） ==================== -->
+        <!-- 用户 → 前端 -->
+        <line x1="180" y1="105" x2="218" y2="105" stroke="#22d3ee" stroke-width="1.5" marker-end="url(#arrowheadCyan)"/>
+        <text x="199" y="97" fill="#94a3b8" font-size="8" text-anchor="middle">浏览器访问</text>
+
+        <!-- MetaMask ↔ 前端 (EIP-1193) -->
+        <line x1="180" y1="215" x2="218" y2="198" stroke="#fb7185" stroke-width="1.5" marker-end="url(#arrowheadRose)"/>
+        <line x1="218" y1="206" x2="182" y2="223" stroke="#fb7185" stroke-width="1.5" marker-end="url(#arrowheadRose)"/>
+        <text x="200" y="182" fill="#fb7185" font-size="8" text-anchor="middle">EIP-1193 连接 / 签名</text>
+
+        <!-- 前端 → 合约 -->
+        <line x1="470" y1="130" x2="518" y2="130" stroke="#34d399" stroke-width="1.5" marker-end="url(#arrowheadEm)"/>
+        <text x="494" y="122" fill="#94a3b8" font-size="8" text-anchor="middle">ethers.js v5 · JSON-RPC</text>
+
+        <!-- 前端 → Pinata -->
+        <line x1="350" y1="265" x2="350" y2="348" stroke="#fbbf24" stroke-width="1.5" marker-end="url(#arrowheadAmber)"/>
+        <text x="356" y="310" fill="#94a3b8" font-size="8" text-anchor="start">axios POST 图片/元数据</text>
+
+        <!-- 前端 → IPFS 网关 (读取) -->
+        <path d="M 430 265 C 480 320 490 330 500 348" fill="none" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="4,4" marker-end="url(#arrowhead)"/>
+        <text x="455" y="320" fill="#94a3b8" font-size="8" text-anchor="middle">axios GET 元数据</text>
+
+        <!-- Pinata → 网关 (CID 分发) -->
+        <line x1="460" y1="410" x2="498" y2="410" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        <text x="479" y="402" fill="#94a3b8" font-size="8" text-anchor="middle">CID</text>
+
+        <!-- 合约 → 网关 (tokenURI 含 CID) -->
+        <path d="M 640 255 C 640 290 610 310 595 348" fill="none" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="4,4" marker-end="url(#arrowhead)"/>
+        <text x="655" y="305" fill="#94a3b8" font-size="8">tokenURI → IPFS CID</text>
+
+        <!-- deploy.js → 合约 (部署) -->
+        <path d="M 200 555 C 380 470 480 410 545 330" fill="none" stroke="#34d399" stroke-width="1.5" stroke-dasharray="5,5" marker-end="url(#arrowheadEm)"/>
+        <text x="365" y="515" fill="#34d399" font-size="8">npx hardhat run --network localhost</text>
+
+        <!-- test → 合约 -->
+        <path d="M 425 555 C 500 490 520 430 560 330" fill="none" stroke="#34d399" stroke-width="1.5" stroke-dasharray="5,5" marker-end="url(#arrowheadEm)"/>
+        <text x="520" y="470" fill="#34d399" font-size="8">npx hardhat test</text>
+
+        <!-- deploy.js → Marketplace.json -->
+        <line x1="205" y1="580" x2="648" y2="288" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+
+        <!-- Marketplace.json → 前端 (注入) -->
+        <path d="M 580 340 C 540 280 520 220 470 180" fill="none" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="4,4" marker-end="url(#arrowhead)"/>
+        <text x="560" y="265" fill="#94a3b8" font-size="8">注入 address + ABI</text>
+
+        <!-- 前端 → Firebase (构建部署) -->
+        <path d="M 470 230 C 540 290 650 310 730 360" fill="none" stroke="#fbbf24" stroke-width="1.5" stroke-dasharray="5,5" marker-end="url(#arrowheadAmber)"/>
+        <text x="610" y="305" fill="#fbbf24" font-size="8">npm run build · firebase deploy</text>
+
+        <!-- ==================== 组件 ==================== -->
+
+        <!-- 外部：用户 -->
+        <rect x="30" y="60" width="150" height="90" rx="6" fill="rgba(30, 41, 59, 0.5)" stroke="#94a3b8" stroke-width="1.5"/>
+        <text x="105" y="82" fill="white" font-size="12" font-weight="600" text-anchor="middle">NFT 用户</text>
+        <text x="105" y="99" fill="#94a3b8" font-size="9" text-anchor="middle">买家 · 卖家 · 管理员</text>
+        <text x="105" y="113" fill="#94a3b8" font-size="8" text-anchor="middle">浏览器 (桌面/移动)</text>
+        <text x="105" y="127" fill="#64748b" font-size="7" text-anchor="middle">通过 MetaMask 交互</text>
+
+        <!-- 安全：MetaMask -->
+        <rect x="30" y="190" width="150" height="70" rx="6" fill="rgba(136, 19, 55, 0.4)" stroke="#fb7185" stroke-width="1.5"/>
+        <text x="105" y="212" fill="white" font-size="11" font-weight="600" text-anchor="middle">MetaMask 钱包</text>
+        <text x="105" y="228" fill="#94a3b8" font-size="8" text-anchor="middle">window.ethereum (EIP-1193)</text>
+        <text x="105" y="242" fill="#fb7185" font-size="8" text-anchor="middle">chainId 0x7a69 (31337)</text>
+
+        <!-- 前端层 -->
+        <rect x="220" y="40" width="250" height="225" rx="8" fill="rgba(8, 51, 68, 0.4)" stroke="#22d3ee" stroke-width="1.5"/>
+        <text x="345" y="62" fill="white" font-size="12" font-weight="600" text-anchor="middle">React 前端 (SPA)</text>
+        <text x="345" y="78" fill="#94a3b8" font-size="9" text-anchor="middle">CRA 5.0.1 · React 18.1</text>
+        <text x="345" y="92" fill="#94a3b8" font-size="9" text-anchor="middle">react-router-dom v6</text>
+        <text x="345" y="118" fill="#22d3ee" font-size="9" text-anchor="middle">Marketplace.js — 市场浏览</text>
+        <text x="345" y="134" fill="#22d3ee" font-size="9" text-anchor="middle">SellNFT.js — 上传/铸造/上架</text>
+        <text x="345" y="150" fill="#22d3ee" font-size="9" text-anchor="middle">NFTPage.js — 详情/购买</text>
+        <text x="345" y="166" fill="#22d3ee" font-size="9" text-anchor="middle">Profile.js — 我的资产</text>
+        <text x="345" y="182" fill="#22d3ee" font-size="9" text-anchor="middle">Navbar.js — 钱包连接</text>
+        <text x="345" y="206" fill="#94a3b8" font-size="8" text-anchor="middle">TailwindCSS 3 · axios · pinata.js</text>
+        <text x="345" y="222" fill="#22d3ee" font-size="8" text-anchor="middle">config-overrides.js — Node polyfill</text>
+        <text x="345" y="240" fill="#22d3ee" font-size="8" text-anchor="middle">src/Marketplace.json — 合约地址/ABI</text>
+
+        <!-- 合约层边界（本地链） -->
+        <rect x="520" y="40" width="440" height="250" rx="12" fill="rgba(52, 211, 153, 0.04)" stroke="#34d399" stroke-width="1" stroke-dasharray="8,4"/>
+        <text x="534" y="58" fill="#34d399" font-size="10" font-weight="600">本地链：Hardhat Node · chainId 31337 (0x7a69)</text>
+
+        <!-- NFTMarketplace 合约 -->
+        <rect x="545" y="85" width="390" height="170" rx="6" fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1.5"/>
+        <text x="740" y="107" fill="white" font-size="12" font-weight="600" text-anchor="middle">NFTMarketplace.sol</text>
+        <text x="740" y="123" fill="#94a3b8" font-size="8" text-anchor="middle">ERC721URIStorage + Ownable · Solidity 0.8.26 · OpenZeppelin 4.7</text>
+        <text x="740" y="143" fill="#34d399" font-size="9" text-anchor="middle">createToken(uri, price) — 铸造 + 上架 + 托管进合约</text>
+        <text x="740" y="159" fill="#34d399" font-size="9" text-anchor="middle">executeSale(tokenId) — NFT→买家 · 成交价→卖家</text>
+        <text x="740" y="175" fill="#34d399" font-size="9" text-anchor="middle">updateListPrice() — 管理员改上架费 (默认 0.01 ETH)</text>
+        <text x="740" y="191" fill="#34d399" font-size="9" text-anchor="middle">getAllNFTs / getMyNFTs / getListedTokenForId</text>
+        <text x="740" y="209" fill="#94a3b8" font-size="8" text-anchor="middle">上架费与成交价归属：卖家价 + 平台费(owner)</text>
+        <text x="740" y="223" fill="#64748b" font-size="7" text-anchor="middle">上架时 NFT 托管在合约地址 (escrow 模式)</text>
+
+        <!-- 部署产物 -->
+        <rect x="560" y="270" width="180" height="34" rx="6" fill="rgba(30, 41, 59, 0.5)" stroke="#94a3b8" stroke-width="1.5"/>
+        <text x="650" y="284" fill="white" font-size="9" text-anchor="middle">src/Marketplace.json</text>
+        <text x="650" y="297" fill="#94a3b8" font-size="8" text-anchor="middle">部署时写入 address + ABI</text>
+
+        <!-- 云存储：Pinata -->
+        <rect x="220" y="350" width="240" height="120" rx="6" fill="rgba(120, 53, 15, 0.3)" stroke="#fbbf24" stroke-width="1.5"/>
+        <text x="340" y="372" fill="white" font-size="12" font-weight="600" text-anchor="middle">Pinata — IPFS 存储</text>
+        <text x="340" y="388" fill="#94a3b8" font-size="9" text-anchor="middle">Pinning Service</text>
+        <text x="340" y="408" fill="#fbbf24" font-size="9" text-anchor="middle">pinFileToIPFS → NFT 图片</text>
+        <text x="340" y="424" fill="#fbbf24" font-size="9" text-anchor="middle">pinJSONToIPFS → 元数据 JSON</text>
+        <text x="340" y="440" fill="#94a3b8" font-size="8" text-anchor="middle">gateway.pinata.cloud/ipfs/{CID}</text>
+        <text x="340" y="456" fill="#fbbf24" font-size="7" text-anchor="middle">密钥: REACT_APP_PINATA_KEY/SECRET (.env)</text>
+
+        <!-- 外部：IPFS 网关 -->
+        <rect x="500" y="350" width="190" height="120" rx="6" fill="rgba(30, 41, 59, 0.5)" stroke="#94a3b8" stroke-width="1.5"/>
+        <text x="595" y="372" fill="white" font-size="11" font-weight="600" text-anchor="middle">IPFS 公共网关</text>
+        <text x="595" y="390" fill="#94a3b8" font-size="9" text-anchor="middle">https://ipfs.io/ipfs/{CID}</text>
+        <text x="595" y="408" fill="#94a3b8" font-size="9" text-anchor="middle">读取图片 + 元数据</text>
+        <text x="595" y="424" fill="#94a3b8" font-size="8" text-anchor="middle">GetIpfsUrlFromPinata()</text>
+        <text x="595" y="438" fill="#64748b" font-size="7" text-anchor="middle">链上存 Pinata URL，展示时转 ipfs.io</text>
+
+        <!-- 云托管：Firebase -->
+        <rect x="730" y="350" width="230" height="120" rx="6" fill="rgba(120, 53, 15, 0.3)" stroke="#fbbf24" stroke-width="1.5"/>
+        <text x="845" y="372" fill="white" font-size="12" font-weight="600" text-anchor="middle">Firebase Hosting</text>
+        <text x="845" y="388" fill="#94a3b8" font-size="9" text-anchor="middle">静态托管 build/</text>
+        <text x="845" y="404" fill="#fbbf24" font-size="9" text-anchor="middle">SPA rewrite → index.html</text>
+        <text x="845" y="420" fill="#94a3b8" font-size="8" text-anchor="middle">firebase.json 已配置</text>
+        <text x="845" y="436" fill="#64748b" font-size="7" text-anchor="middle">生产环境下用户经此访问前端</text>
+
+        <!-- 开发工具排 -->
+        <rect x="30" y="530" width="170" height="70" rx="6" fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1.5"/>
+        <text x="115" y="552" fill="white" font-size="11" font-weight="600" text-anchor="middle">scripts/deploy.js</text>
+        <text x="115" y="568" fill="#94a3b8" font-size="8" text-anchor="middle">部署合约并导出</text>
+        <text x="115" y="582" fill="#34d399" font-size="8" text-anchor="middle">address + ABI → 前端</text>
+
+        <rect x="230" y="530" width="190" height="70" rx="6" fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1.5"/>
+        <text x="325" y="552" fill="white" font-size="11" font-weight="600" text-anchor="middle">test/nftmarket-test.js</text>
+        <text x="325" y="568" fill="#94a3b8" font-size="8" text-anchor="middle">Waffle + Chai 断言</text>
+        <text x="325" y="582" fill="#34d399" font-size="8" text-anchor="middle">正常 / 异常 / 辅助函数 3 组</text>
+
+        <rect x="450" y="530" width="210" height="70" rx="6" fill="rgba(30, 41, 59, 0.5)" stroke="#94a3b8" stroke-width="1.5"/>
+        <text x="555" y="552" fill="white" font-size="11" font-weight="600" text-anchor="middle">config-overrides.js</text>
+        <text x="555" y="568" fill="#94a3b8" font-size="8" text-anchor="middle">react-app-rewired 接管 CRA</text>
+        <text x="555" y="582" fill="#94a3b8" font-size="8" text-anchor="middle">crypto/stream/buffer/process polyfill</text>
+
+        <!-- ==================== 图例（置于所有边界之外） ==================== -->
+        <text x="30" y="658" fill="white" font-size="10" font-weight="600">Legend</text>
+
+        <rect x="105" y="650" width="16" height="10" rx="2" fill="rgba(8, 51, 68, 0.4)" stroke="#22d3ee" stroke-width="1"/>
+        <text x="127" y="658" fill="#94a3b8" font-size="8">前端</text>
+
+        <rect x="170" y="650" width="16" height="10" rx="2" fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1"/>
+        <text x="192" y="658" fill="#94a3b8" font-size="8">合约/工具链</text>
+
+        <rect x="260" y="650" width="16" height="10" rx="2" fill="rgba(120, 53, 15, 0.3)" stroke="#fbbf24" stroke-width="1"/>
+        <text x="282" y="658" fill="#94a3b8" font-size="8">云服务</text>
+
+        <rect x="340" y="650" width="16" height="10" rx="2" fill="rgba(30, 41, 59, 0.5)" stroke="#94a3b8" stroke-width="1"/>
+        <text x="362" y="658" fill="#94a3b8" font-size="8">外部/产物</text>
+
+        <rect x="425" y="650" width="16" height="10" rx="2" fill="rgba(136, 19, 55, 0.4)" stroke="#fb7185" stroke-width="1"/>
+        <text x="447" y="658" fill="#94a3b8" font-size="8">钱包/安全</text>
+
+        <line x1="515" y1="655" x2="535" y2="655" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        <text x="540" y="658" fill="#94a3b8" font-size="8">调用/数据流</text>
+
+        <line x1="615" y1="655" x2="635" y2="655" stroke="#64748b" stroke-width="1.5" stroke-dasharray="4,4" marker-end="url(#arrowhead)"/>
+        <text x="640" y="658" fill="#94a3b8" font-size="8">部署/构建</text>
+      </svg>
+    </div>
+
+    <div class="cards">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-dot cyan"></div>
+          <h3>前端技术栈</h3>
+        </div>
+        <ul>
+          <li>• React 18.1 + Create React App 5.0.1</li>
+          <li>• react-router-dom 6 (4 个业务路由)</li>
+          <li>• Tailwind CSS 3 + PostCSS 8</li>
+          <li>• ethers.js 5.6 + MetaMask (EIP-1193)</li>
+          <li>• axios 调 Pinata / IPFS 网关</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-dot emerald"></div>
+          <h3>合约与工具链</h3>
+        </div>
+        <ul>
+          <li>• Solidity 0.8.26 (单合约 ERC-721 市场)</li>
+          <li>• OpenZeppelin 4.7 (ERC721URIStorage/Ownable)</li>
+          <li>• Hardhat 2.22 + Waffle + ethers 5.6</li>
+          <li>• solidity-coverage 覆盖率</li>
+          <li>• 测试：正常/异常/辅助 3 组用例</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-dot amber"></div>
+          <h3>存储与部署</h3>
+        </div>
+        <ul>
+          <li>• Pinata IPFS：图片 + 元数据 JSON</li>
+          <li>• 读取走 ipfs.io 公共网关</li>
+          <li>• Firebase Hosting (build/ + SPA rewrite)</li>
+          <li>• 本地链部署：hardhat node (31337)</li>
+          <li>• 部署导出 address+ABI 注入前端</li>
+        </ul>
+      </div>
+    </div>
+
+    <p class="footer">
+      NFT Marketplace (marketplace3) · 结构基于源码实际阅读 · 可打开本文件查看架构图，拖拽/缩放友好
+    </p>
+  </div>
+</body>
+</html>

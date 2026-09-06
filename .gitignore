@@ -1,0 +1,21 @@
+# dependencies
+/node_modules
+
+# misc
+.DS_Store
+Thumbs.db
+
+# hardhat
+/artifacts
+/cache
+
+# testing
+/coverage
+
+# build output
+/build
+/dist
+
+# env files
+.env*
+!.env.example
