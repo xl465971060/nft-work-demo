@@ -3,8 +3,6 @@ import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router";
 
-const usedChainId = "0x7a69"; // localhost
-
 function Navbar() {
   const [connected, toggleConnect] = useState(false);
   const location = useLocation();
@@ -28,14 +26,9 @@ function Navbar() {
   }
 
   async function connectWebsite() {
+    // 不做任何链切换，直接读取钱包当前所在的链，链由钱包决定
     const chainId = await window.ethereum.request({ method: "eth_chainId" });
-    if (chainId !== usedChainId) {
-      //alert('Incorrect network! Switch your metamask network to Rinkeby');
-      await window.ethereum.request({
-        method: "wallet_switchEthereumChain",
-        params: [{ chainId: usedChainId }],
-      });
-    }
+    console.log("current network chainId:", chainId);
     await window.ethereum
       .request({ method: "eth_requestAccounts" })
       .then(() => {

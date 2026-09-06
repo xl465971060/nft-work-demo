@@ -20,10 +20,13 @@ module.exports = {
     hardhat: {
       chainId: 31337,
     },
-    // sepolia: {
-    //   url: "https://eth-sepolia.g.alchemy.com/v2/I3eHFhWUQaZueOZP5BPt3jdFLebK9aEe",
-    //   accounts: [process.env.PRIVATE_KEY],
-    // },
+    sepolia: {
+      // .env 里填好 ALCHEMY_SEPOLIA_API_KEY 和 PRIVATE_KEY 即可
+      url: `https://eth-sepolia.g.alchemy.com/v2/${process.env.ALCHEMY_SEPOLIA_API_KEY}`,
+      // 没填 PRIVATE_KEY 时给空数组，避免本地开发被 HH8 报错打断
+      accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
+      chainId: 11155111,
+    },
     // mumbai: {
     //   url: `https://polygon-mumbai.g.alchemy.com/v2/nAhiCHKvZkhkp4A7PkkCIBON0-BXW26d`,
     //   //accounts: [process.env.privateKey]
