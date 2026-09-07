@@ -1,56 +1,23 @@
 import fullLogo from "../full_logo.png";
 import { Link } from "react-router-dom";
-import { useEffect, useState } from "react";
 import { useLocation } from "react-router";
+import { useAccount, useConnect, useDisconnect } from "wagmi";
 
 function Navbar() {
-  const [connected, toggleConnect] = useState(false);
   const location = useLocation();
-  const [currAddress, updateAddress] = useState("0x");
+  const { address, isConnected } = useAccount();
+  const { connect, connectors } = useConnect();
+  const { disconnect } = useDisconnect();
 
-  async function getAddress() {
-    const ethers = require("ethers");
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const signer = provider.getSigner();
-    const addr = await signer.getAddress();
-    updateAddress(addr);
-  }
+  const currAddress = address || "0x";
 
-  function updateButton() {
-    const ethereumButton = document.querySelector(".enableEthereumButton");
-    ethereumButton.textContent = "Connected";
-    ethereumButton.classList.remove("hover:bg-blue-70");
-    ethereumButton.classList.remove("bg-blue-500");
-    ethereumButton.classList.add("hover:bg-green-70");
-    ethereumButton.classList.add("bg-green-500");
-  }
-
-  async function connectWebsite() {
-    // 不做任何链切换，直接读取钱包当前所在的链，链由钱包决定
-    const chainId = await window.ethereum.request({ method: "eth_chainId" });
-    console.log("current network chainId:", chainId);
-    await window.ethereum
-      .request({ method: "eth_requestAccounts" })
-      .then(() => {
-        updateButton();
-        getAddress();
-        window.location.replace(location.pathname);
-      });
-  }
-
-  useEffect(() => {
-    if (!window.ethereum) return;
-    let val = window.ethereum.isConnected();
-    if (val) {
-      getAddress();
-      toggleConnect(val);
-      updateButton();
+  const handleConnect = () => {
+    if (isConnected) {
+      disconnect();
+    } else {
+      connect({ connector: connectors[0] });
     }
-
-    window.ethereum.on("accountsChanged", function (accounts) {
-      window.location.replace(location.pathname);
-    });
-  }, [location.pathname]);
+  };
 
   return (
     <div className="">
@@ -100,12 +67,14 @@ function Navbar() {
                 </li>
               )}
               <li>
-                <button
-                  className="enableEthereumButton bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-sm"
-                  onClick={connectWebsite}
-                >
-                  {connected ? "Connected" : "Connect Wallet"}
-                </button>
+                {connectors.length > 0 && (
+                  <button
+                    className="enableEthereumButton bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-sm"
+                    onClick={handleConnect}
+                  >
+                    {isConnected ? "Connected" : "Connect Wallet"}
+                  </button>
+                )}
               </li>
             </ul>
           </li>
